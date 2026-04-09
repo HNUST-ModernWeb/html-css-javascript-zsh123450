@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人主页</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        body.dark-mode {
+            background: linear-gradient(135deg, #2c3e50 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+        }
+        
+        header {
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: inherit;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+        
+        nav a:hover {
+            background-color: rgba(0,0,0,0.1);
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: inherit;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .theme-toggle:hover {
+            background-color: rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: inherit;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .dark-mode .card {
+            background: #2d3748;
+            color: #e0e0e0;
+        }
+        
+        .avatar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .avatar-wrapper {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            cursor: pointer;
+            border: 5px solid #4a6ee0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        .avatar-wrapper:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        .avatar-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .avatar-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .avatar-wrapper:hover .avatar-overlay {
+            opacity: 1;
+        }
+        
+        .avatar-tip {
+            text-align: center;
+            margin-top: 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .dark-mode .avatar-tip {
+            color: #aaa;
+        }
+        
+        .reset-avatar {
+            color: #4a6ee0;
+            cursor: pointer;
+            text-decoration: underline;
+            transition: color 0.3s;
+        }
+        
+        .reset-avatar:hover {
+            color: #3a5ad0;
+        }
+        
+        .profile-section {
+            margin-top: 2rem;
+        }
+        
+        .profile-item {
+            margin-bottom: 1.5rem;
+        }
+        
+        .profile-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #4a5568;
+        }
+        
+        .dark-mode .profile-label {
+            color: #cbd5e0;
+        }
+        
+        .editable-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
+            color: #2d3748;
+            transition: all 0.3s;
+        }
+        
+        .dark-mode .editable-input {
+            background: #4a5568;
+            border-color: #718096;
+            color: white;
+        }
+        
+        .editable-input:focus {
+            outline: none;
+            border-color: #4a6ee0;
+            box-shadow: 0 0 0 3px rgba(74, 110, 224, 0.1);
+        }
+        
+        .intro-text {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .save-btn {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #4a6ee0, #3a5ad0);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 110, 224, 0.4);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 2rem 0;
+            color: #666;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .dark-mode footer {
+            color: #aaa;
+            border-top-color: #4a5568;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #4a6ee0;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="#home">首页</a></li>
+            </ul>
+        </nav>
+        <button class="theme-toggle" id="themeToggle">
+            <i class="fas fa-moon"></i>
+        </button>
+    </header>
+
+    <div class="container">
+        <h1>个人信息卡片</h1>
+        
+        <div class="card">
+            <div class="avatar-container">
+                <div class="avatar-wrapper" id="avatarWrapper">
+                  
+                    <img src="https://images.unsplash.com/photo-1569913486515-b74bf7751574?w=200&h=200&fit=crop&crop=face" alt="用户头像" class="avatar-preview" id="avatarPreview">
+                    <div class="avatar-overlay">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                </div>
+                <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
+            </div>
+            <p class="avatar-tip">点击头像更换照片 | <span class="reset-avatar" id="resetAvatar">恢复默认</span></p>
+            
+            <div class="profile-section">
+                <div class="profile-item">
+                    <label class="profile-label"><i class="fas fa-user"></i> 姓名</label>
+                    <input type="text" class="editable-input" id="nameInput" value="张三">
+                </div>
+                
+                <div class="profile-item">
+                    <label class="profile-label"><i class="fas fa-graduation-cap"></i> 学校</label>
+                    <input type="text" class="editable-input" id="schoolInput" value="湖南科技大学">
+                </div>
+                
+                <div class="profile-item">
+                    <label class="profile-label"><i class="fas fa-laptop-code"></i> 专业</label>
+                    <input type="text" class="editable-input" id="majorInput" value="计算机科学与技术">
+                </div>
+                
+                <div class="profile-item">
+                    <label class="profile-label"><i class="fas fa-map-marker-alt"></i> 家乡</label>
+                    <input type="text" class="editable-input" id="hometownInput" value="湖南浏阳">
+                </div>
+                
+                <div class="profile-item">
+                    <label class="profile-label"><i class="fas fa-info-circle"></i> 个人简介</label>
+                    <textarea class="editable-input intro-text" id="introInput">热衷于探索技术与文化的交汇点，喜欢用代码构建世界，也热爱家乡浏阳的烟火气息。在湖南科技大学学习计算机科学与技术，享受编程带来的创造乐趣，同时也珍惜家乡的每一份美好。闲暇时喜欢阅读技术书籍、探索新算法，也喜欢回到浏阳品尝家乡美食，感受古城的宁静与活力。</textarea>
+                </div>
+                
+                <button class="save-btn" id="saveBtn">保存信息</button>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2026 个人主页 · 让世界看到独特的你</p>
+        </footer>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 主题切换
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        const themeIcon = themeToggle.querySelector('i');
+        
+        // 检查本地存储的主题设置
+        if (localStorage.getItem('theme') === 'dark') {
+            body.classList.add('dark-mode');
+            themeIcon.classList.replace('fa-moon', 'fa-sun');
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // 头像上传功能
+        const avatarWrapper = document.getElementById('avatarWrapper');
+        const avatarUpload = document.getElementById('avatarUpload');
+        const avatarPreview = document.getElementById('avatarPreview');
+        const resetAvatar = document.getElementById('resetAvatar');
+        
+       
+        const defaultAvatar = 'https://images.unsplash.com/photo-1569913486515-b74bf7751574?w=200&h=200&fit=crop&crop=face';
+        
+        // 检查本地存储的头像
+        const savedAvatar = localStorage.getItem('userAvatar');
+        if (savedAvatar) {
+            avatarPreview.src = savedAvatar;
+        }
+        
+        // 点击头像或头像区域触发文件选择
+        avatarWrapper.addEventListener('click', () => {
+            avatarUpload.click();
+        });
+        
+        // 处理头像上传
+        avatarUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = (e) => {
+                        avatarPreview.src = e.target.result;
+                        // 保存到本地存储
+                        localStorage.setItem('userAvatar', e.target.result);
+                        showToast('头像已更新！');
+                    };
+                    
+                    reader.readAsDataURL(file);
+                } else {
+                    showToast('请选择图片文件！');
+                }
+            }
+        });
+        
+        // 重置头像
+        resetAvatar.addEventListener('click', (e) => {
+            e.stopPropagation();
+            avatarPreview.src = defaultAvatar;
+            // 从本地存储中移除
+            localStorage.removeItem('userAvatar');
+            showToast('已恢复默认头像');
+        });
+        
+        // 个人信息保存
+        const saveBtn = document.getElementById('saveBtn');
+        const nameInput = document.getElementById('nameInput');
+        const schoolInput = document.getElementById('schoolInput');
+        const majorInput = document.getElementById('majorInput');
+        const hometownInput = document.getElementById('hometownInput');
+        const introInput = document.getElementById('introInput');
+        
+        // 从本地存储加载信息
+        loadUserInfo();
+        
+        saveBtn.addEventListener('click', () => {
+            saveUserInfo();
+            showToast('信息已保存！');
+        });
+        
+        // 自动保存（离开页面时）
+        window.addEventListener('beforeunload', saveUserInfo);
+        
+        function saveUserInfo() {
+            const userInfo = {
+                name: nameInput.value,
+                school: schoolInput.value,
+                major: majorInput.value,
+                hometown: hometownInput.value,
+                intro: introInput.value
+            };
+            
+            localStorage.setItem('userInfo', JSON.stringify(userInfo));
+        }
+        
+        function loadUserInfo() {
+            const savedInfo = localStorage.getItem('userInfo');
+            if (savedInfo) {
+                const userInfo = JSON.parse(savedInfo);
+                nameInput.value = userInfo.name || '张三';
+                schoolInput.value = userInfo.school || '湖南科技大学';
+                majorInput.value = userInfo.major || '计算机科学与技术';
+                hometownInput.value = userInfo.hometown || '湖南浏阳';
+                introInput.value = userInfo.intro || '热衷于探索技术与文化的交汇点，喜欢用代码构建世界，也热爱家乡浏阳的烟火气息。在湖南科技大学学习计算机科学与技术，享受编程带来的创造乐趣，同时也珍惜家乡的每一份美好。闲暇时喜欢阅读技术书籍、探索新算法，也喜欢回到浏阳品尝家乡美食，感受古城的宁静与活力。';
+            }
+        }
+        
+        // 提示消息
+        const toast = document.getElementById('toast');
+        
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // 输入框实时保存
+        const inputs = document.querySelectorAll('.editable-input');
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                saveUserInfo();
+            });
+        });
+    </script>
+</body>
+</html>
